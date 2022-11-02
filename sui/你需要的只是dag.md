@@ -38,6 +38,6 @@ DAG-Rider一个很好的特点是，提按操作只是一个简单的可靠广�
 
 **协议** 如果两个正确的进程调用*choose_leader<sub>𝑖</sub>(𝑤)*和 *choose_leader<sub>𝑗<sub>(𝑤)* 的返回值分别为 𝑝1 和 𝑝2，则 𝑝1 = 𝑝2。
 
-**终止** 如果至少有 𝑓 + 1 个进程调用 **choose_leader(*w*)**，那么每个 **choose_leader(*w*)** 调用最终都会返回。
+**终止** 如果至少有 𝑓 + 1 个进程调用 *choose_leader(*w*)*，那么每个 *choose_leader(*w*)* 调用最终都会返回。
 
 
