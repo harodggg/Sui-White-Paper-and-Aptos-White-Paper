@@ -36,8 +36,12 @@ DAG-Rider一个很好的特点是，提按操作只是一个简单的可靠广�
 
 *全球完美硬币*。我们使用全局完美的硬币，对手无法预测。进程 𝑝<sub>𝑖</sub> ∈ Π 通过调用 *choose_leader<sub>𝑖</sub>(𝑤)* 调用硬币的实例 𝑤，𝑤 ∈ N。这个调用返回一个进程𝑝<sub>𝑗</sub>∈Π，它是例如𝑤所选择的领导者。设𝑋<sub>𝑤</sub>为随机变量，表示硬币返回过程𝑝<sub>𝑗</sub>作为调用*choose_leader<sub>𝑖</sub>(𝑤)*。全局完美硬币币有以下保证：
 
-**协议** 如果两个正确的进程调用choose_leader<sub>𝑖</sub>(𝑤)和 *choose_leader<sub>𝑗<sub>(𝑤)* 的返回值分别为 𝑝1 和 𝑝2，则 𝑝1 = 𝑝2。
+**协议** 如果两个正确的进程调用choose_leader<sub>𝑖</sub>(𝑤)和 choose_leader<sub>𝑗</sub>(𝑤)的返回值分别为 𝑝1 和 𝑝2，则 𝑝1 = 𝑝2。
 
 **终止** 如果至少有 𝑓 + 1 个进程调用 *choose_leader(*w*)*，那么每个 *choose_leader(*w*)* 调用最终都会返回。
+
+**不可预测性** 只要少于𝑓+1个进程调用*select_leader(𝑤)*，返回值就与随机值无法区分，除非有可忽略的概率𝜖。也就是说，对手能猜到调用select_leader(𝑤)返回的进程𝑝<sub>𝑗</sub>的概率𝑝<sub>𝑟</sub> ≤ P<sub>r</sub>[𝑋<sub>𝑤</sub> = 𝑝<sub>𝑗</sub>]+ 𝜖。
+  
+  **公平性** 硬币是公平的，即∀𝑤∈N，∀𝑝<sub>𝑗</sub>∈Π。Pr[𝑋<sub>𝑤</sub>= 𝑝<sub>𝑗</sub>] = 1/𝑛.
 
 
