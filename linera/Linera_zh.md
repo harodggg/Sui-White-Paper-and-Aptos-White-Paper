@@ -81,9 +81,9 @@
 
 受这些观察的启发，Linera 项目的创建是为了基于三个关键原则开发一种新型的web3基础设施：
 
-    （i.） 构建具有可预测性能和响应能力的安全基础架构——通过在一组弹性验证器中运行多个链；
-    （ii.） 启用可扩展 web3 应用程序的丰富生态系统——通过在新的执行层上工作，使多链编程成为主流；
-    （iii.） 最大化去中心化——通过确保弹性验证器得到最佳激励和社区大规模审计。
+（i.） 构建具有可预测性能和响应能力的安全基础架构——通过在一组弹性验证器中运行多个链；
+（ii.） 启用可扩展 web3 应用程序的丰富生态系统——通过在新的执行层上工作，使多链编程成为主流；
+（iii.） 最大化去中心化——通过确保弹性验证器得到最佳激励和社区大规模审计。
 
 ## 1.5 项目概况
 
@@ -149,6 +149,7 @@ Linera 协议旨在提供一个计算基础设施，开发人员可以在其中�
 最后一个用例是Linera如何管理当前的一组验证器，也称为委员会。 Liner的编程模型在第4节中介绍。审计员的额外角色在第 5 节中讨论。
 
 ## 2.2 安全模型
+
 Linera被设计为拜占庭容错(BFT)[^12]。 所有参与者生成一个密钥对，由一个私有签名密钥和对应的公共验证密钥组成。 Linera使用委托权益证明(DPoS)模型[^26]，其中每个验证者的投票权与其权益和用户委托给它的权益绑定。
 
 __假设。__ 我们提出了总投票权为N的Linera协议。拜占庭（又名不诚实）验证者的一个固定的、未知的子集可能会偏离该协议。 假设他们控制至多f的投票权对于某个值f使得 0 ≤ f < $\frac{N}{3}$。 这类似于许多拜占庭容错协议[6,12]。 在实践中，人们选择f的最大可能值，即 f = $\frac{N−1}{3}$。
@@ -158,6 +159,7 @@ __假设。__ 我们提出了总投票权为N的Linera协议。拜占庭（又�
 &ensp;&ensp;&ensp;&ensp;我们使用“法定人数”一词来指代由验证者发布的一组签名，这些签名的组合投票权至少为 N-f。 群体的一个重要属性，称为群体交集，是对于任何两个群体，都存在一个诚实的验证者α。 当数据类型（通常是一个块）被法定人数的验证者签名时，它被称为被认证。 认证区块也简称为证书。
 
 __目标。__ Linera 旨在保证以下安全属性：
+
 - 安全：对于任何微链，每个验证者都会看到相同的块链（的前缀），因此它对链的执行状态应用相同的修改序列，并最终将相同的消息集传递给其他链。
 - 链的最终一致性：如果在一个诚实的验证者上用一个新的认证块扩展一条微链，任何用户都可以采取一系列步骤来确保这个块被添加到每个诚实验证者上的链中。
 - 异步消息的最终一致性：如果一条微链在一个诚实的验证者上收到一条跨链消息，任何用户都可以采取一系列步骤来确保这条消息在每个诚实的验证者上都被链接收到。
@@ -165,9 +167,9 @@ __目标。__ Linera 旨在保证以下安全属性：
 - 分段可审计性：有足够的公共加密证据来证明的状态可以以分布式的方式对Linera的正确性进行审计，一次一个链。
 
 对于单一所有者的链（第2.4节），Linera也保证以下属性：
+
 - 单调块验证：在单所有者链中，如果一个区块提案是第一个由所有者在给定区块高度签署的，并且被诚实的验证者接受，那么通过适当的行动，链所有者最终总能成功收集到足够的选票 出示证书。
 - 最坏情况下的效率：在单一所有者链中，拜占庭验证器不能显着延迟正确用户的区块提议和区块确认。
-
 
 ## 2.3 符号
 
@@ -175,39 +177,41 @@ __目标。__ Linera 旨在保证以下安全属性：
 
 &ensp;&ensp;&ensp;&ensp; Linera系统的状态在所有验证器之间复制。 对于给定的验证器，记为 α，我们使用符号 X(α) 来表示 α 关于某些复制数据 X 的当前视图。数据类型 D = ⟨Tag, arg<sub>1</sub>, . . . , arg<sub>n</sub>⟩ 是一个值序列，以不同的标记标签开始，并打算通过网络发送。 我们使用大写的名称来区分数据类型标记与数学函数（例如 hash）或数据字段（例如 ownerid(α)），并简单地为数据类型编写 Tag(arg<sub>1</sub>, . . . . , arg<sub>n</sub>)。 我们为一系列数据类型 (D<sub>1</sub>,...D<sub>n</sub>) 编写D̃。
 
-
 ## 2.4 微链
 
 Linera基础设施的主要构建块是它的微链。 微链（或简称为链）类似于常规区块链，因为它由一系列块组成，每个块都包含一系列操作。 重要的是,Linera将提议新区块的角色（链所有者的角色）与验证它们的角色（验证者的角色）分开了。 扩展链的协议是可配置的，取决于链的类型。
 
 __链标识符。__ 微链由设计为不可重放的标识符id表示。 具体来说，唯一标识符（或简称标识符）是一个非空数字序列，写为 id = [n<sub>1</sub>,...,n<sub>k</sub>] 对于某些 1 ≤ k ≤ k<sub>max</sub>。 我们使用 :: 表示序列末尾一个数字的串联：[n1, . . . , nk+1] = [n1, . . . , nk] :: n<sub>k</sub>+1 (k < k<sub>MAX</sub>)。 在这个例子中，我们说 id = [n<sub>1,...,n<sub>k</sub>] 是 id::nk+1 的父级。
+
 &ensp;&ensp;&ensp;&ensp;Linera系统从创世配置中定义的一组固定微链开始。 要创建新链，现有链的所有者必须执行链创建操作。 新标识符被计算为父标识符和创建新链的操作索引的串联。
 
 __链类型。__ Linera 支持三种类型的微链：
-    (i) *单一所有者链*，其中只有一个用户（由其公钥标识）被授权提议区块；
-    (ii) *许可链*，其中只有一组明确定义的合作用户被授权提议区块；
-    (iii) 任何用户都可以提议将操作包含在验证器的下一个块中的*公共链*。
+
+(i) *单一所有者链*，其中只有一个用户（由其公钥标识）被授权提议区块；
+(ii) *许可链*，其中只有一组明确定义的合作用户被授权提议区块；
+(iii) 任何用户都可以提议将操作包含在验证器的下一个块中的*公共链*。
+
 &ensp;&ensp;&ensp;&ensp;在所有这三种情况下，验证者之间关于链的下一个区块B的协议都由证书 C = cert[B] 很好地表示。 在单所有者链的情况下，证书C的产生受到可靠广播 [6,11] 的启发，将在第 2.8 节中详细描述。 在公共链的情况下，证书 C 是由验证者之间的经典 BFT 共识协议产生的提交证明。 第 2.9 节概述了许可链和公共链的情况。 为简单起见，除非另有说明，否则本报告的其余部分将重点关注单一所有者链。
+
 &ensp;&ensp;&ensp;&ensp;每个链都包含一个字段 owner<sup>id</sup>(α) 以验证其所有者（如果有）。 当链有一个由公钥 pk 验证的所有者时，我们写 owner<sup>id</sup>(α) = pk。 许可链有 owner<sup>id</sup>(α) = {pk<sub>1</sub>,...,pk<sub>n</sub>} 和公共链 owner<sub>id</sub>(α) = ⋆。 当 owner<sub>id</sub>(α) = ⊥ 时，链被认为是不活跃的。
-    
 
 __链生命周期。__ 任何现有的链都可以为另一个用户创建一个新的微链，并使用区块证书 C 作为创建证明。 一旦创建，新的微链就独立于其父微链工作。 Linera将提供一条专用的公共链，以允许新用户轻松创建他们的第一个链。
+
 &ensp;&ensp;&ensp;&ensp;Linera还可以通过执行改变密钥owner<sup>id</sup>(α)的操作，将链的控制权安全且可验证地转移给其他用户。设置owner<sup>id</sup>(α)= ⊥可以有效地永久停用该链。
+
 &ensp;&ensp;&ensp;&ensp;使用唯一标识符很重要，这样可以安全地删除已停用的微链的状态并将其存档在冷库中，同时防止区块链被重放。
 
 __区块。__ 块是由以下数据组成的数据类型 B = Block(id, n, h, $\widetilde{O}$)：
-    
+
 - 扩展id的链的唯一标识符，
 - 区块高度 n ≥ 0，
 - 前一个区块的哈希 h（如果 n=0 则为 ⊥），
 - 一系列操作 $\widetilde{O}$。
-    
 操作 O 是在链 ID 上执行一次的指令，可能对可选的接收者链 ID' 产生影响。 操作可能例如 创建链、执行用户交易或从其他链接收消息。
-    
-&ensp;&ensp;&ensp;&ensp;当验证者收到包含 id 和下一个预期区块高度 n+1 的认证请求 C = cert[B] 时，具有当前区块链 ⊥ → B<sub>0</sub> → ... → B<sub>n</sub> 的微链 id 被区块 B 成功扩展。 验证者跟踪每个链 id 的当前状态，并且仅在验证正确的链接和 B 的正确执行后投票赞成添加块 B。在 BFT 假设下，这确保验证者最终在每个链上执行相同的块序列， 因此同意执行状态。
-    
-&ensp;&ensp;&ensp;&ensp;块 B 的执行包括按给定顺序解释 B 中列出的操作 $\widetilde{O}$。 操作可能会为其他链生成传出消息并消耗传入消息。 实际上，出于审计目的，块 B 还包括执行块后状态的哈希值，以及操作产生的传出消息。
 
+&ensp;&ensp;&ensp;&ensp;当验证者收到包含 id 和下一个预期区块高度 n+1 的认证请求 C = cert[B] 时，具有当前区块链 ⊥ → B<sub>0</sub> → ... → B<sub>n</sub> 的微链 id 被区块 B 成功扩展。 验证者跟踪每个链 id 的当前状态，并且仅在验证正确的链接和 B 的正确执行后投票赞成添加块 B。在 BFT 假设下，这确保验证者最终在每个链上执行相同的块序列， 因此同意执行状态。
+
+&ensp;&ensp;&ensp;&ensp;块 B 的执行包括按给定顺序解释 B 中列出的操作 $\widetilde{O}$。 操作可能会为其他链生成传出消息并消耗传入消息。 实际上，出于审计目的，块 B 还包括执行块后状态的哈希值，以及操作产生的传出消息。
 
 ## 2.5 跨链请求
 
@@ -220,70 +224,74 @@ Linera应用程序的状态通常分布在许多链中以实现可扩展性。�
 &ensp;&ensp;&ensp;&ensp;收件箱允许 Linera 支持任意消息，因为修改不会立即应用于目标链。 相反，消息被放置在目标链的收件箱中，实现为第 2.6 节中描述的可交换数据结构（即插入顺序无关紧要）。 接收链的所有者然后执行从收件箱中挑选消息并将其影响应用于链状态的操作（第 2.7 节）。
 
 ## 2.6 链状态
-    
+
 我们现在描述验证者和客户看到的 Linera 链的状态。 每个验证器都存储一个映射，其中包含所有链的状态，由它们的标识符索引。 客户对链有类似的表示，除了它们仅作为与其相关的一小部分链的全节点（即跟踪块链和执行状态）。 接下来，我们关注给定验证器的状态，记为 α。
-    
-    __链状态。__ 验证者 α 看到的链 id 的状态可以分为 (i) 一致的部分，它是块链的确定性函数 ⊥ → B0 → 。 . . → B<sub>n</sub> 已经被 α 执行； (ii) 验证者可能不同意的本地化部分。 链状态的一致部分包括以下数据： 
-    
+
+__链状态。__ 验证者 α 看到的链 id 的状态可以分为 (i) 一致的部分，它是块链的确定性函数 ⊥ → B0 → 。 . . → B<sub>n</sub> 已经被 α 执行； (ii) 验证者可能不同意的本地化部分。 链状态的一致部分包括以下数据：
+
 - 如前所述，控制 id 中块生产的字段 owner<sup>id</sup>(α)。
 - 一个整数值，写成 next-height<sup>id</sup>(α)，跟踪预期的区块高度下一个 id 块。 （此处为 n + 1。最初为 0。）
 - 前一个区块的哈希 block-hash<sup>id</sup>(α)（初始为⊥。）
 - 执行状态，记为 state<sup>id</sup>(α)。
-    
+  
 链状态的本地化部分包括以下内容：
-    
+
 - __pending__<sup>id</sup>(α)，一个可选值，表示 id 上的块正在等待确认（初始值为⊥）。
 - 证书列表，写成received<sup>id</sup>(α)，跟踪所有已经被接收的证书由 α 确认并涉及 id 作为接收链。
 - 称为收件箱的数据结构，用 inbox<sup>id</sup>(α) 表示（见下一段）。
-    
-pending<sup>id</sup>(α) 字段特定于单一所有者链，并在第 2.8 节中进行了解释。 在许可链和公共链的情况下，它由附加数据完成。 received<sup>id</sup>(α) 证书列表对于活性至关重要（第 3.3 节）。
-__ 收件箱状态。__ 收件箱 I = inbox<sub>id</sub>(α) 是一种特殊的数据结构，用于跟踪 id 收到并等待操作消费的跨链消息。 在最简单的实现中，可以将收件箱视为两组不相交的消息 I = (I<sub>+</sub>, I<sub>−</sub>)：
-    
- - I<sub>+</sub> 跟踪 id 已经收到并等待在下一个块中被消费的消息 m，
- - I<sub>-</sub> 跟踪尚未被 id 接收的消息 m（从 α 的角度来看），但由于在认证块中的操作而被预期消耗。
-    
+
+pending<sup>id</sup>(α) 字段特定于单一所有者链，并在第 2.8 节中进行了解释。 在许可链和公共链的情况下，它由附加数据完成received<sup>id</sup>(α) 证书列表对于活性至关重要（第 3.3 节）。
+
+__收件箱状态。__ 收件箱 I = inbox<sub>id</sub>(α) 是一种特殊的数据结构，用于跟踪 id 收到并等待操作消费的跨链消息。 在最简单的实现中，可以将收件箱视为两组不相交的消息 I = (I<sub>+</sub>, I<sub>−</sub>)：
+
+- I<sub>+</sub> 跟踪 id 已经收到并等待在下一个块中被消费的消息 m，
+- I<sub>-</sub> 跟踪尚未被 id 接收的消息 m（从 α 的角度来看），但由于在认证块中的操作而被预期消耗。
+
 收件箱的一个重要属性是添加或使用不同的消息是可交换的。 在这个简化的演示文稿中，我们假设消息永远不会完全相同地重放，比方说，多亏了计数器。 （否则，我必须是从消息到有符号整数的映射。）Linera 的当前实现使用更复杂的数据结构，强制对每对 (id',id) 和每个应用程序的消息进行排序。
-    
+
 ## 2.7 块执行
+
 我们现在描述如何执行块链中包含的操作序列。 Linera部署支持的操作通常包括以下内容：
-    
+
 - OpenChain(id',pk') 使用新的标识符 id' 和公钥 pk' 激活一条新链——可能代表拥有 pk' 的另一个用户；
 - Execute(t) 在智能合约应用程序的上下文中执行用户交易 t；
 - Receive(m) 消费并执行来自收件箱的消息 m；
 - ChangeKey(pk′) 转移链的所有权；
 - CloseChain 停用链 ID。
-    
+
 为简单起见，我们省略了多所有者链和重新配置所需的交易费用和附加逻辑（第 2.9 节）。 为了执行交易t，我们假设一个方法 ExecuteTransaction(id, t) 尝试修改 state<sup>id</sup>并且在成功的情况下可能返回 ⊥ 或 (m,id')，后一种情况是请求将消息 m 发送到 链号'。 我们还假设了一种通过执行跨链消息 m 来修改 state<sup>id</sup> 的方法，记为 ExecuteMessage(id, m)。
-    
+
 &ensp;&ensp;&ensp;&ensp;此描述转化为算法 1 中的伪代码。块的执行上面建议的 B = Block(id,n,h, $\widetilde{O}$) 对应于函数 ExecuteBlock。函数 BlockIsValid 对块的验证类似于 ExecuteBlock除了不会持久化对状态的更改，忽略跨链查询和消息不能按预期执行，也就是说，如果 inbox<sup>id</sup> 在以下位置不为空，则验证失败 -通话结束。
-   
 
 ## 2.8 客户端/验证器交互
+
 <img width="818" alt="image" src="https://user-images.githubusercontent.com/31732456/209138584-08a6d7d8-ed0a-4fb6-9088-647fcbaeb033.png">
 我们现在可以描述 Linera 系统中客户端（又名链所有者）和验证器之间的交互。 Linera 协议的客户端运行一个本地节点，标记为 β，该节点跟踪与他们相关的一小部分链。这些相关链通常包括客户拥有的链以及直接依赖链，特别是负责跟踪验证器及其网络地址的特殊管理链（第 2.9 节）。
-    
+
 &ensp;&ensp;&ensp;&ensp;与验证器的网络交互总是由客户端发起。 客户可能希望 (i) 用新区块扩展他们自己的一条链，或者 (ii) 向滞后的验证者提供客户感兴趣的链中缺少的证书。
-    
+
 &ensp;&ensp;&ensp;&ensp;为了支持这两个用例，验证器提供算法 2 中描述的两个服务处理程序，称为 HandleRequest 和 HandleCertificate。 为简单起见，我们省略了客户端用来查询链状态或从验证器下载区块链的服务处理程序。
 
 &ensp;&ensp;&ensp;&ensp;我们从旨在更新滞后验证器的交互开始。
-    
+
 __将丢失的证书上传到验证器。__ 任何客户端都可以使用 HandleCertificate 入口点将 B = Block(id,n,h, $\widetilde{O}$) 的新证书 C = cert[B] 上传到验证器 α，前提是链 id 是活动的并且 n 是下一个 从 α 的角度来看的预期区块高度（即形式上的 owner<sup>id</sup>(α) $\neq$ ⊥ 和 next-height<sup>id</sup>(α) = n）。
-    
+
 &ensp;&ensp;&ensp;&ensp;如果验证者 α 还没有创建链 ID，或者它滞后了一个以上的区块，具体来说，客户端应该上传一系列以 C = cert[B] 结尾的多个缺失证书。 如有必要，序列可以从祖先链 id' 的块开始（即，id' = parent(parent(... id))）。 在这种情况下，序列将继续，直到到达创建链 ID 的父链的块，然后以 C 结尾的块链结束。
-    
+
 &ensp;&ensp;&ensp;&ensp;在实践中，上传这样一系列证书的需要证明本地节点 β 可以首先跟踪链 ID。 客户端可以通过查看记录在列表 received<sup>id</sup>(β) 中的第一个块来快速找到创建 id 的确切块。
-    
+
 __扩展单一所有者链。__  在验证器足够新的常见场景中，Linera 客户端可以使用图 1 所示的可靠广播 [6,11] 的变体使用新区块 B 扩展他们的链，并按如下方式进行。
-    
+
 - 客户端使用 HandleRequest 入口点α(<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">1</font>) 将通过其签名验证的块 B 广播到每个验证器，并等待响应的法定人数。
 - 验证器通过发回 B 上的签名（称为投票）作为确认（<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">3</font>）来响应预期高度的有效请求 R = auth[B]。 在收到来自法定人数的验证者的投票后，客户端形成证书 C = cert[B]。
 - 当上传具有预期下一个块高度的证书 C = cert[B] 时（<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">4</font>），这将触发块 B 的一次性执行（<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">5</font>）。
-    
+-
+
 &ensp;&ensp;&ensp;&ensp;如果某些验证者 α 无法立即投票给其他情况下有效的提案 B = Block(id,n,h, $\widetilde{O}$)，则有时首先需要同步步骤 (<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">0</font>)。 这可能有两个原因：
-    1. 链 ID 尚未激活或 α 缺少较早的块（即正式的 owner<sup>id</sup>(α) = ⊥ 或 next-height<sup>id</sup>(α) < n）；
-    2. α缺少跨链消息，即：I_ = inbox_<sup>id</sup>在Õ阶段执行结束时不为空。                                                                               
-    
+
+1. 链 ID 尚未激活或 α 缺少较早的块（即正式的 owner<sup>id</sup>(α) = ⊥ 或 next-height<sup>id</sup>(α) < n）；
+2. α缺少跨链消息，即：I_= inbox_<sup>id</sup>在Õ阶段执行结束时不为空。
+
 在第一种情况下，Linera 客户端必须如前一段所述在链 ID（可能还有其祖先）中上传缺失的证书，直到 next-heightid(α) > n。 在第二种情况下，客户端必须在已将消息 m ∈ I<sub>−</sub> 发送到 id 的链中上传丢失的证书。 当 B 已被正确构建时（即不尝试接收从未发送过的消息），集合 I<sub>−</sub> 必然被并集 $\cup$<sub>β</sub>received<sub>id</sub>(β) 中列出的证书覆盖，其中 β 的范围超过验证器的任何法定人数。
 
 &ensp;&ensp;&ensp;&ensp;重要的是，将丢失的块上传到验证器对所有客户端都有好处。 为了最大限度地提高活跃度并减少其未来操作的延迟，在实践中，预计用户会在涉及到自己的链时主动更新所有验证器，从而最大限度地减少其他客户端同步的需要。 然而，每个人同步的可能性对于活跃度很重要。 它还允许证书充当已认证块的最终证明。
@@ -293,6 +301,7 @@ __扩展单一所有者链。__  在验证器足够新的常见场景中，Liner
 &ensp;&ensp;&ensp;&ensp;用于在单一所有者链中决定一个新块的步骤 <font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">1</font>) <font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">2</font>) <font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">3</font>)构成了一个 1.5 往返协议。 受可靠广播的启发，该协议没有“视图更改”[11] 的概念来支持重试。 换句话说，一旦一些验证者投票支持 B，已经开始提交（有效的）区块提议 B 的链所有者不能中断提议不同区块的过程。这样做会有阻塞他们的链的风险。 出于这个原因，Linera 还支持具有额外往返行程的变体（第 2.9 节）。
 
 ## 2.9 核心协议的扩展
+
 我们现在勾勒出一些对核心 Linera 多链协议的重要扩展。
 
 __许可链。__ 2.8 节中介绍的协议允许在 1.5 客户端-验证器往返中乐观地扩展单所有者微链。 Linera 还支持具有 2.5 次往返的更复杂的协议来解决以下用例：
@@ -332,17 +341,18 @@ __重新配置。__ 能够更改线性验证器（也称为委员会）的集合
 
 &ensp;&ensp;&ensp;&ensp;为了防止远程攻击，管理员还会定期建议弃用旧委员会。 接受此类更新后，微链将忽略仅由弃用委员会认证的块中的消息。 旧消息只有在包含在以可信配置结尾的区块链中（因此重新认证）后才会被再次接受。
 
-
 # 3 多链协议分析
 
 在本节中，我们分析了Linera区块链设定的设计目标，包括响应能力、可扩展性和安全保证。
 
 ## 3.1 响应能力
+
 与经典区块链交互时的一个常见问题是缺乏性能保证。提交到mempool的交易可能会立即、过一会儿或永远不会被挑选，这取决于大约同时发布的其他用户交易。取消待处理的交易通常需要提交另一笔具有更高汽油费的交易。此外，经典区块链具有固定且有限的吞吐量：足够大的提交交易突发（例如由于流行的空投）最终必须导致积压和/或交易费用激增。 Mempool系统还通过矿工可提取价值 (MEV) 技术向用户公开价值流失。
 
 &ensp;&ensp;&ensp;&ensp;Linera允许用户管理自己的链并解决这些问题，这要归功于受基于客户端的可靠广播启发的轻量级块扩展协议（第 2.8 节）。这种方法不需要内存池，因为用户直接将交易提交给验证器并完全控制处理时间。与验证器的并行通信意味着唯一的处理延迟是由客户端和验证器之间的网络往返时间（RTT）强加的（通常是几百毫秒）。 Linera可以轻松构建对延迟敏感的应用程序，并提供可靠且可预测的处理时间。最后，移除内存池和减少延迟大大减少了MEV机会。
 
 ## 3.2 可扩展性
+
 <img width="814" alt="image" src="https://user-images.githubusercontent.com/31732456/209138656-e471e967-6836-40d5-8b69-81ebdfa90e88.png">
 微链的方法（第 2.4 节）允许Linera验证器在多个工作者之间有效地分片。具体来说，验证器中的每个工作人员负责特定的微链子集。客户端与每个验证器的负载均衡器通信，验证器在内部将查询分派给适当的工作者（图 2）。
 
@@ -357,6 +367,7 @@ __重新配置。__ 能够更改线性验证器（也称为委员会）的集合
 &ensp;&ensp;&ensp;&ensp;Linera的公共链需要完整的拜占庭容错共识协议来对多个客户端提交的区块进行排序（第 2.9 节）。然而，共识协议在每个公共微链上实例化一次，而不是为整个系统实例化一次。这有很多好处。首先，来自不同公共微链的用户不能降低彼此的体验。其次，单个微链的交易率不是整个系统的限制因素。最终，Linera 的吞吐量总是可以通过创建额外的微链和增加验证者的规模来增加。
 
 ## 3.3 安全
+
 在本节中，我们提供了Linera多链协议的非正式安全分析。按照第2节中的描述，我们关注单一所有者链。在未来的报告中，分析将扩展到其他类型的账户（第 2.9 节）。
 
 __声明 1__(安全）。*对于任何微链，每个验证者都会看到相同的块链（的前缀），因此它对链的执行状态应用相同的修改序列，并最终将相同的消息集传递给其他链。*
@@ -394,7 +405,6 @@ __声明 7__(单调块验证)。*在单所有者链中，如果一个区块提�
 Linera的编程模型旨在为应用程序开发人员提供丰富的、与语言无关的可组合性，同时利用微链进行扩展。
 <img width="834" alt="image" src="https://user-images.githubusercontent.com/31732456/209138721-a7658b1c-77ed-4050-a820-a1e93cdde975.png">
 
-
 ## 4.1 创建应用程序
 
 Linera使用WebAssembly(Wasm)虚拟机[^1][^22]作为用户应用程序的主要执行引擎。用于开发Linera应用程序的SDK最初将以Rust语言为目标。
@@ -404,13 +414,14 @@ Linera使用WebAssembly(Wasm)虚拟机[^1][^22]作为用户应用程序的主要
 &ensp;&ensp;&ensp;&ensp;单个字节码标识符可以跨共享相同代码但不共享相同配置的多个独立应用程序产生（图3中的“应用程序 1”和“应用程序 2”）。
 
 ## 4.2 多链部署
+
 <img width="827" alt="image" src="https://user-images.githubusercontent.com/31732456/209138804-52f51b5c-1fa7-4c2f-acf4-e5293b3719f8.png">
 Linera应用程序默认是多链的，因为它们的全局状态通常分布在多个链上。换句话说，给定链上应用程序的本地实例只保存位于那里的应用程序状态的子集。例如，在类似 ERC-20 的令牌管理应用程序中，单一所有者链的所有者可能希望在她拥有的链上持有他们的个人账户。
 
 &ensp;&ensp;&ensp;&ensp;当微链的所有者第一次接受来自应用程序的传入消息(第2.5节）（图3中的“应用程序实例 1C”）时，会自动下载应用程序的字节码并启动应用程序。
 
-
 ## 4.3 跨链通信
+
 应用之间的跨链通信是通过异步调用实现的，让微链独立运行。 Linera应用程序之间跨链协调的编程风格受到参与者模型[^5]的启发。该实现依赖于第2.5节中描述的跨链请求。基本点是每个参与者都可以独占访问自己的内部状态，并且参与者不能直接相互调用。
 
 __跨链信息__ 跨链消息允许应用程序将任意数据从一条链异步传输到另一条链(图 4）。为了理解数据，同一个应用程序必须位于跨链消息的发送端和接收端。在实践中，应用程序的本地实例为实例与之通信的每个来源维护一个收件箱。当应用程序想要将消息发送到目的地时，它们会返回一个包含消息的值，以便运行时可以执行适当的跨链请求。
@@ -422,6 +433,7 @@ __跨链信息__ 跨链消息允许应用程序将任意数据从一条链异步
 __Pub/sub 通道.__ 除了一对一通信之外，Linera 还支持使用通道进行一对多通信。用户可以在一个应用程序中创建一个通道，而驻留在其他微链上的相同应用程序实例可以通过发送带有发布者应用程序和链标识符的订阅消息来订阅它。重要的是，只有当发布者通过将注册消息添加到其链中来接受订阅时，订阅者才会被添加到频道中。在引擎盖下，通道充当一组一对一的连接。发送到频道的消息会传送到订阅该频道的所有收件箱，并且可以由订阅者接收。按照设计，迟到的订阅者一旦被发布者接受，就会收到发送到通道的最后一条消息，而不是消息的整个历史记录。
 
 ## 4.4 本地可组合性
+
 *同步调用。* 在同一条微链上，不同的Linera应用程序可以使用类似于经典区块链（如以太坊 [^30]）中的智能合约调用的同步调用来组合（参见图 4 的顶部）。由一系列应用程序调用产生并源自单个用户交易的状态修改是原子的。换句话说，要么所有调用都成功，要么全部失败。调用应用程序会创建其内部状态的虚拟副本，并对缓存状态执行调用。此时，新状态尚未写入存储。如果任何交易失败，所有分阶段的修改都将被丢弃。
 
 *会话。* 在某些情况下，希望将状态片段的管理从一个应用程序委托给另一个应用程序。我们将管理这种分离状态的临时对象称为会话。用例的典型示例如下： (i) 应用程序B调用令牌管理应用程序 A； (ii)部分代币从A的账本中取出，放入新的session； (iii)B获得会话的所有权； (iv)B调用会话将代币移回A的分类帐，例如，在另一个帐户下；这有效地消耗并终止了会话。
@@ -429,6 +441,7 @@ __Pub/sub 通道.__ 除了一对一通信之外，Linera 还支持使用通道�
 会话保证由单个应用程序拥有（无重复）。消费会话不是可选的：必须在当前交易结束之前正确消费会话，否则事务将失败。因此，除了资产之外，会话还适用于管理临时义务，例如，偿还快速贷款的义务 [^24]。
 
 ## 4.5 临时链
+
 Linera编程模型的另一个特点是能够创建短期许可链（第 2.9 节），用于少数松散协调的用户之间的短期交互。
 
 &ensp;&ensp;&ensp;&ensp;例如，两个用户可以创建一个微链来原子地交换两个资产。共享微链将有（最多）两个所有者，其参数将适应交换过程。要使用这条链，两个用户都必须将他们想要交换的资产从他们的主微链转移到共享链，然后其中一个用户必须创建一个块来确认或取消交换。重要的是，一旦交换结束，共享微链就会被停用。这可以防止临时链的任何进一步扩展，并允许在将来对其进行归档。
@@ -469,8 +482,6 @@ Linera旨在提供首个在互联网规模上具有可预测性能、响应能�
 <img width="604" alt="image" src="https://user-images.githubusercontent.com/31732456/209137808-bb2adfc8-adff-405f-8bf0-197df47bf9bc.png">
 <img width="682" alt="image" src="https://user-images.githubusercontent.com/31732456/209137843-4e136a17-a5a2-4301-a526-b596e7807405.png">
 
-
-
 [^1]: 法律免责声明：本文件及其内容不是出售任何代币的要约，也不是购买任何代币的要约邀请。我们发布本白皮书只是为了接收公众的反馈和意见。本文件中的任何内容都不应被阅读或解释为对 Linera 基础设施或其代币（如果有）将如何开发、利用或增值的保证或承诺。 Linera 仅概述了其当前的计划，该计划可能会自行决定更改，其成功将取决于其无法控制的许多因素。此类前瞻性陈述必然涉及已知和未知的风险，可能导致未来期间的实际业绩和结果与我们在本文件中描述或暗示的内容存在重大差异。 Linera 不承担更新其计划的义务。无法保证文件中的任何陈述将被证明是准确的，因为实际结果和未来事件可能存在重大差异。请不要过分依赖未来的陈述。
 
 [^2]: WebAssembly. <https://webassembly.org/>.
@@ -500,7 +511,6 @@ settlement. In Proceedings of the 2nd ACM Conference on Advances in Financial Te
 
 [^14]: Panagiotis Chatzigiannis, Foteini Baldimtsi, and Konstantinos Chalkias. Sok: Blockchain light clients. Cryptology ePrint Archive, 2021.
 
-[^15]: Philip Daian, Steven Goldfeder, Tyler Kell, Yunqi Li, Xueyuan Zhao, Iddo Bentov, Lorenz Breidenbach, and Ari Juels. Flash boys 2.0: Frontrunning in decentralized ex- changes, miner extractable value, and consensus instability. In 2020 IEEE Symposium on Security and Privacy (SSP’20), pages 910–927. IEEE, 2020.
 
 [^16]: George Danezis, Lefteris Kokoris-Kogias, Alberto Sonnino, and Alexander Spiegelman. Narwhal and Tusk: a DAG-based mempool and efficient BFT consensus. In Proceedings of the Seventeenth European Conference on Computer Systems, pages 34–50, 2022.
 
@@ -508,9 +518,7 @@ settlement. In Proceedings of the 2nd ACM Conference on Advances in Financial Te
 
 [^18]: Ittay Eyal, Adem Efe Gencer, Emin Gu ̈n Sirer, and Robbert Van Renesse. {Bitcoin- NG}: A scalable blockchain protocol. In 13th USENIX symposium on networked sys- tems design and implementation (NSDI 16), pages 45–59, 2016.
 
-[^19]: Rati Gelashvili, Alexander Spiegelman, Zhuolun Xiang, George Danezis, Zekun Li, Dahlia Malkhi, Yu Xia, and Runtian Zhou. Block-STM: Scaling blockchain execution by turning ordering curse to a performance blessing, 2022.
 
-[^20]: Arthur Gervais, Ghassan O Karame, Karl Wu ̈st, Vasileios Glykantzis, Hubert Ritzdorf, and Srdjan Capkun. On the security and performance of proof of work blockchains. In Proceedings of the 2016 ACM SIGSAC conference on computer and communications security, pages 3–16, 2016.
 
 [^21]: Arthur Gervais, Hubert Ritzdorf, Ghassan O Karame, and Srdjan Capkun. Tampering with the delivery of blocks and transactions in bitcoin. In Proceedings of the 22nd ACM SIGSAC Conference on Computer and Communications Security, pages 692–705, 2015.
 
@@ -526,7 +534,6 @@ settlement. In Proceedings of the 2nd ACM Conference on Advances in Financial Te
 
 [^27]: Du Mingxiao, Ma Xiaofeng, Zhang Zhe, Wang Xiangwei, and Chen Qijun. A review on consensus algorithm of blockchain. In 2017 IEEE international conference on systems, man, and cybernetics (SMC), pages 2567–2572. IEEE, 2017.
 
-[^28]: nanfengpo. A design of decentralized ZK-rollups based on EIP-4844. https:// ethresear.ch/t/a-design-of-decentralized-zk-rollups-based-on-eip-4844/ 12434, 2022.
 
 [^29]: Slashdot. Best blockchain apis of 2022. <https://slashdot.org/software/> blockchain-apis/, 2022.
 
@@ -534,4 +541,3 @@ settlement. In Proceedings of the 2nd ACM Conference on Advances in Financial Te
 
 [^31]: Gavin Wood et al. Ethereum: A secure decentralised generalised transaction ledger. Ethereum project yellow paper, 151(2014):1–32, 2014.
 
-[^32]: Mahdi Zamani, Mahnush Movahedi, and Mariana Raykova. Rapidchain: Scaling blockchain via full sharding. In Proceedings of the 2018 ACM SIGSAC conference on computer and communications security, pages 931–948, 2018.
