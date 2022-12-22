@@ -1,10 +1,10 @@
 <center>
-# Linera: 一个用于高度可扩展的Web3应用程序的区块链基础设施
+#Linera: 一个用于高度可扩展的Web3应用程序的区块链基础设施
 </center>
 </br>
 
 <center>
-## Version 1 – December 19, 2022
+##Version 1 – December 19, 2022
 </center>
 </br>
 
