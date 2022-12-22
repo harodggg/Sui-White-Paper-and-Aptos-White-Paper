@@ -260,9 +260,78 @@ __ 收件箱状态。__ 收件箱 I = inbox<sub>id</sub>(α) 是一种特殊的�
 
 ## 2.8 客户端/验证器交互
 <img width="818" alt="image" src="https://user-images.githubusercontent.com/31732456/209138584-08a6d7d8-ed0a-4fb6-9088-647fcbaeb033.png">
+我们现在可以描述 Linera 系统中客户端（又名链所有者）和验证器之间的交互。 Linera 协议的客户端运行一个本地节点，标记为 β，该节点跟踪与他们相关的一小部分链。这些相关链通常包括客户拥有的链以及直接依赖链，特别是负责跟踪验证器及其网络地址的特殊管理链（第 2.9 节）。
+    
+&ensp;&ensp;&ensp;&ensp;与验证器的网络交互总是由客户端发起。 客户可能希望 (i) 用新区块扩展他们自己的一条链，或者 (ii) 向滞后的验证者提供客户感兴趣的链中缺少的证书。
+    
+&ensp;&ensp;&ensp;&ensp;为了支持这两个用例，验证器提供算法 2 中描述的两个服务处理程序，称为 HandleRequest 和 HandleCertificate。 为简单起见，我们省略了客户端用来查询链状态或从验证器下载区块链的服务处理程序。
 
+&ensp;&ensp;&ensp;&ensp;我们从旨在更新滞后验证器的交互开始。
+    
+__将丢失的证书上传到验证器。__ 任何客户端都可以使用 HandleCertificate 入口点将 B = Block(id,n,h, $\widetilde{O}$) 的新证书 C = cert[B] 上传到验证器 α，前提是链 id 是活动的并且 n 是下一个 从 α 的角度来看的预期区块高度（即形式上的 owner<sup>id</sup>(α) $\neq$ ⊥ 和 next-height<sup>id</sup>(α) = n）。
+    
+&ensp;&ensp;&ensp;&ensp;如果验证者 α 还没有创建链 ID，或者它滞后了一个以上的区块，具体来说，客户端应该上传一系列以 C = cert[B] 结尾的多个缺失证书。 如有必要，序列可以从祖先链 id' 的块开始（即，id' = parent(parent(... id))）。 在这种情况下，序列将继续，直到到达创建链 ID 的父链的块，然后以 C 结尾的块链结束。
+    
+&ensp;&ensp;&ensp;&ensp;在实践中，上传这样一系列证书的需要证明本地节点 β 可以首先跟踪链 ID。 客户端可以通过查看记录在列表 received<sup>id</sup>(β) 中的第一个块来快速找到创建 id 的确切块。
+    
+__扩展单一所有者链。__  在验证器足够新的常见场景中，Linera 客户端可以使用图 1 所示的可靠广播 [6,11] 的变体使用新区块 B 扩展他们的链，并按如下方式进行。
+    
+- 客户端使用 HandleRequest 入口点α(<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">1</font>) 将通过其签名验证的块 B 广播到每个验证器，并等待响应的法定人数。
+- 验证器通过发回 B 上的签名（称为投票）作为确认（<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">3</font>）来响应预期高度的有效请求 R = auth[B]。 在收到来自法定人数的验证者的投票后，客户端形成证书 C = cert[B]。
+- 当上传具有预期下一个块高度的证书 C = cert[B] 时（<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">4</font>），这将触发块 B 的一次性执行（<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">5</font>）。
+    
+&ensp;&ensp;&ensp;&ensp;如果某些验证者 α 无法立即投票给其他情况下有效的提案 B = Block(id,n,h, $\widetilde{O}$)，则有时首先需要同步步骤 (<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">0</font>)。 这可能有两个原因：
+    1. 链 ID 尚未激活或 α 缺少较早的块（即正式的 owner<sup>id</sup>(α) = ⊥ 或 next-height<sup>id</sup>(α) < n）；
+    2. α缺少跨链消息，即：I_ = inbox_<sup>id</sup>在Õ阶段执行结束时不为空。                                                                               
+    
+在第一种情况下，Linera 客户端必须如前一段所述在链 ID（可能还有其祖先）中上传缺失的证书，直到 next-heightid(α) > n。 在第二种情况下，客户端必须在已将消息 m ∈ I<sub>−</sub> 发送到 id 的链中上传丢失的证书。 当 B 已被正确构建时（即不尝试接收从未发送过的消息），集合 I<sub>−</sub> 必然被并集 $\cup$<sub>β</sub>received<sub>id</sub>(β) 中列出的证书覆盖，其中 β 的范围超过验证器的任何法定人数。
+
+&ensp;&ensp;&ensp;&ensp;重要的是，将丢失的块上传到验证器对所有客户端都有好处。 为了最大限度地提高活跃度并减少其未来操作的延迟，在实践中，预计用户会在涉及到自己的链时主动更新所有验证器，从而最大限度地减少其他客户端同步的需要。 然而，每个人同步的可能性对于活跃度很重要。 它还允许证书充当已认证块的最终证明。
+
+&ensp;&ensp;&ensp;&ensp;实际上，客户端应该在每个验证器的单独线程上执行可选的同步步骤 (<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">0</font>) 和投票步骤 (<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">1</font>)。 为了防止来自恶意验证器的拒绝服务攻击，客户端可能会在收集到足够的选票后立即停止同步验证器 (<font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">2</font>)。
+
+&ensp;&ensp;&ensp;&ensp;用于在单一所有者链中决定一个新块的步骤 <font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">1</font>) <font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">2</font>) <font style="background-color:black; padding:5px 10px;border-spacing:0; border-radius: 100%;color:white">3</font>)构成了一个 1.5 往返协议。 受可靠广播的启发，该协议没有“视图更改”[11] 的概念来支持重试。 换句话说，一旦一些验证者投票支持 B，已经开始提交（有效的）区块提议 B 的链所有者不能中断提议不同区块的过程。这样做会有阻塞他们的链的风险。 出于这个原因，Linera 还支持具有额外往返行程的变体（第 2.9 节）。
 
 ## 2.9 核心协议的扩展
+我们现在勾勒出一些对核心 Linera 多链协议的重要扩展。
+
+__许可链。__ 2.8 节中介绍的协议允许在 1.5 客户端-验证器往返中乐观地扩展单所有者微链。 Linera 还支持具有 2.5 次往返的更复杂的协议来解决以下用例：
+
+- 单个链所有者希望能够在进行中时安全地中断正在进行的区块提议。
+- 块中的操作依赖于外部预言机（例如 Unix 时间），并且包括在有效后可能变为无效的条件。
+- 多个所有者希望操作链（假设链下协调最少）。
+- 单个链所有者希望委托与验证器相关的维护操作重新配置。
+
+&ensp;&ensp;&ensp;&ensp;为简洁起见，我们省略了 2.5 往返协议的细节。 它可以被看作是一个简化的部分同步 BFT 共识协议 [^11]，具有视图更改（也称为回合）但没有领导者选举或超时。 在没有领导者选举的情况下，不同的所有者可能会尝试同时提议不同的块（即在相同的块高度和轮次中）导致当前轮次失败并需要另一轮。 因此，这种操作模式假设同一链的所有者保持足够水平的（链下）合作，以便最终只有其中一个人提出一个区块并成功。
+
+__公链。__ 其余用例使用公共链：当链自己不断产生新块时，可以接受来自任何用户的交易。 应用示例包括：
+
+- 在一个地方管理验证器和权益（参见下面的重新配置）。
+- 运行并非旨在利用多链方法的传统区块链算法（例如 AMM）；
+- 促进为新用户创建微链。
+
+&ensp;&ensp;&ensp;&ensp; Linera中的公共链将基于完整的拜占庭容错共识协议。 这是 Linera 基础设施中 Linera 验证者在区块提案中发挥积极作用的唯一案例。 我们计划依靠用户链和跨链消息而不是传统的内存池来将用户交易收集到新的区块中。
+
+__发布/订阅频道。__ 跨链异步消息的一个常见用例是链 ID 上的应用程序实例创建一个通道并维护一个订阅者列表。 具体来说，一个频道的运作方式如下：
+
+- 在链id上执行的用户交易可能会向通道推送新消息；
+- 发生这种情况时，当前订阅者会在他们的收件箱中收到一条跨链消息；
+- 通过接收和执行来自订阅者 id' 的消息 Subscribe(id') 和 Unsubscribe(id')，在链 id 上管理订阅者集。
+
+&ensp;&ensp;&ensp;&ensp; 我们发现在对 Linera 应用程序进行编程时，发布/订阅通道是一种有用的抽象（另请参见第 4 节）。 Linera 协议本身支持发布/订阅频道，以实现特定的优化。 例如，新接受的订阅者当前接收频道的最后一条消息，而无需频道所有者的额外工作。
+
+__重新配置。__ 能够更改线性验证器（也称为委员会）的集合对于系统的安全性至关重要（请参阅第 5 节）。
+
+&ensp;&ensp;&ensp;&ensp;为此，Linera 部署了一个专用的 Admin 公共链，运行该应用程序以进行系统管理。 该系统应用程序负责跟踪连续的验证者集，也就是委员会，包括他们的股份和网络地址。 此应用程序生成的连续配置由它们的纪元编号标识。
+
+&ensp;&ensp;&ensp;&ensp;为了安全地传播验证者集正在更改的信息，管理员将新配置发布到一个特殊频道，每个 Linera 微链在创建时都会订阅该频道。2 新创建的微链会自动接收当前验证者集（即最后一条消息在 管理频道）并设置其当前纪元号字段。
+
+&ensp;&ensp;&ensp;&ensp;创建新委员会时，每个微链都会在其收件箱中收到一条消息。 重要的是，微链所有者必须将传入的消息包含在新块中，以明确地将他们的链迁移到新的验证器集。 这必须在两组验证器仍在运行时，在前一组验证器停止之前完成。
+
+&ensp;&ensp;&ensp;&ensp;由于 Linera 的可扩展性，只要有足够多的客户端处于活动状态，就可以在短时间内将大量链并行迁移到新配置。 为了促进这一过程并允许链所有者长时间离线，我们设想许多用户将授权第三方代表他们创建迁移块。 然而，这将需要将链配置为在授权期间使用上述 2.5 往返协议
+
+&ensp;&ensp;&ensp;&ensp;为了防止远程攻击，管理员还会定期建议弃用旧委员会。 接受此类更新后，微链将忽略仅由弃用委员会认证的块中的消息。 旧消息只有在包含在以可信配置结尾的区块链中（因此重新认证）后才会被再次接受。
+
 
 # 3 多链协议分析
 
