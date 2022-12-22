@@ -161,6 +161,8 @@ Linera 协议旨在提供一个计算基础设施，开发人员可以在其中�
 ## 2.7 块执行
 
 ## 2.8 客户端/验证器交互
+<img width="818" alt="image" src="https://user-images.githubusercontent.com/31732456/209138584-08a6d7d8-ed0a-4fb6-9088-647fcbaeb033.png">
+
 
 ## 2.9 核心协议的扩展
 
@@ -171,18 +173,24 @@ Linera 协议旨在提供一个计算基础设施，开发人员可以在其中�
 ## 3.1 响应能力
 
 ## 3.2 可扩展性
+<img width="814" alt="image" src="https://user-images.githubusercontent.com/31732456/209138656-e471e967-6836-40d5-8b69-81ebdfa90e88.png">
+
 
 ## 3.3 安全
 
 # 4 在 Linera中构建Web3应用程序
 
 Linera的编程模型旨在为应用程序开发人员提供丰富的、与语言无关的可组合性，同时利用微链进行扩展。
+<img width="834" alt="image" src="https://user-images.githubusercontent.com/31732456/209138721-a7658b1c-77ed-4050-a820-a1e93cdde975.png">
+
 
 ## 4.1 创建应用程序
 
 Linera使用WebAssembly(Wasm)虚拟机[^1][^22]作为用户应用程序的主要执行引擎。用于开发Linera应用程序的SDK最初将以Rust语言为目标。
 
 ## 4.2 多链部署
+<img width="827" alt="image" src="https://user-images.githubusercontent.com/31732456/209138804-52f51b5c-1fa7-4c2f-acf4-e5293b3719f8.png">
+
 
 ## 4.3 跨链通信
 
