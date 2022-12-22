@@ -7,6 +7,7 @@
 
 - [Sui](#sui)
 - [Aptos](#aptos)
+- [Linera](#linera)
 
 ## Sui
 
@@ -19,6 +20,14 @@
 1. [Aptos白皮书(英文原版-pdf格式)](https://github.com/harodggg/Sui-White-Paper-and-Aptos-White-Paper/blob/main/aptos/aptos%20whitepaper.pdf)
 2. [Aptos白皮书(中文版本-pdf格式)](./aptos/aptos白皮书\(moveworld社区译\).pdf)
 3. [Aptos白皮书(中文版本-word格式)](https://github.com/harodggg/Sui-White-Paper-and-Aptos-White-Paper/blob/main/aptos/aptos%E7%99%BD%E7%9A%AE%E4%B9%A6(word%E7%89%88%E6%9C%AC).docx)
+
+## Linera
+
+1. [Linera白皮书(英文原版-pdf格式)](./linera/Linera_whitepaper_v1.pdf)
+2. [Linera白皮书(中文版本-markdown格式)](./linera/Linera_zh.md)
+
+
+
 
 
 
