@@ -29,7 +29,7 @@
 
 ## Ethereum
 
-1. [ethereum黄皮书(英文原版-pdf格式](./ethereum/yellow-paper.pdf）
+1. [ethereum黄皮书(英文原版-pdf格式)](./ethereum/yellow-paper.pdf）
 2. [ethereum黄皮书(中文译版-markdown格式)](./ethereum/yellow-paper-zh.md)
 
 
