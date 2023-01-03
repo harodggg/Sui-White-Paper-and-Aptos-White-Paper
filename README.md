@@ -8,6 +8,7 @@
 - [Sui](#sui)
 - [Aptos](#aptos)
 - [Linera](#linera)
+- [Ethereum](#ethereum)
 
 ## Sui
 
@@ -25,6 +26,11 @@
 
 1. [Linera白皮书(英文原版-pdf格式)](./linera/Linera_whitepaper_v1.pdf)
 2. [Linera白皮书(中文版本-markdown格式)](./linera/Linera_zh.md)
+
+## Ethereum
+
+1. [ethereum黄皮书(英文原版-pdf格式](./ethereum/yellow-paper.pdf）
+2. [ethereum黄皮书(中文译版-markdown格式)](./ethereum/yellow-paper-zh.md)
 
 
 
